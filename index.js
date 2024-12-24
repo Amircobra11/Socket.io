@@ -5,19 +5,19 @@ const { Server } = require("socket.io");
 const sqlite3 = require("sqlite3");
 const { open } = require("sqlite");
 const { availableParallelism } = require("node:os");
-const cluster = require("node:cluster");
+// const cluster = require("node:cluster");
 const { createAdapter, setupPrimary } = require("@socket.io/cluster-adapter");
 
-if (cluster.isPrimary) {
-  const numCPUs = availableParallelism();
-  for (let i = 0; i < numCPUs; i++) {
-    cluster.fork({
-      PORT: 3000 + i,
-    });
-  }
+// if (cluster.isPrimary) {
+//   const numCPUs = availableParallelism();
+//   for (let i = 0; i < numCPUs; i++) {
+//     cluster.fork({
+//       PORT: 3000 + i,
+//     });
+//   }
 
-  return setupPrimary();
-}
+//   return setupPrimary();
+// }
 
 async function main() {
   const db = await open({
@@ -35,10 +35,12 @@ async function main() {
 
   const app = express();
   const server = createServer(app);
-  const io = new Server(server, {
-    connectionStateRecovery: {},
-    adapter: createAdapter(),
-  });
+  const io = new Server(server 
+    // {
+    // connectionStateRecovery: {},
+    // adapter: createAdapter(),
+  // }
+);
 
   app.get("/", (req, res) => {
     res.sendFile(join(__dirname, "index.html"));
@@ -73,12 +75,11 @@ async function main() {
             socket.emit("chat message", row.content, row.id);
           }
         );
-      } catch (e) {
-      }
+      } catch (e) {}
     }
   });
 
-  const port = process.env.PORT;
+  const port = 3000;
 
   server.listen(port, () => {
     console.log(`server running at http://localhost:${port}`);
